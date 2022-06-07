@@ -19,7 +19,7 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "balance")
+    @Column(name = "name")
     private String name;
 
     @Column(name = "passport_id")
