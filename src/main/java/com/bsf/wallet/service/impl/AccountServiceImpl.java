@@ -5,18 +5,19 @@ import com.bsf.wallet.entity.Account;
 import com.bsf.wallet.repository.AccountRepository;
 import com.bsf.wallet.service.AccountService;
 import java.util.List;
-import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 /**
  * Created by: Tharindu Eranga
  * Date: 07 Jun 2022
  **/
+@Slf4j
+@RequiredArgsConstructor
+@Service
 public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
-
-    public AccountServiceImpl(AccountRepository accountRepository) {
-        this.accountRepository = accountRepository;
-    }
 
     @Override
     public List<AccountDetail> getAccounts() {
@@ -28,7 +29,7 @@ public class AccountServiceImpl implements AccountService {
         return accounts
                 .stream()
                 .map(this::mapAccountDetail)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private AccountDetail mapAccountDetail(Account account) {
