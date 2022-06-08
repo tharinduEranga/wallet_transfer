@@ -30,7 +30,7 @@ public class Account {
     @Column(name = "passport_id")
     private String passportId;
 
-    @Column(name = "balance")
+    @Column(name = "balance", nullable = false, columnDefinition = "Decimal(10,2) default '0.00'")
     private BigDecimal balance;
 
     @CreationTimestamp

@@ -1,6 +1,7 @@
 package com.bsf.wallet.service.impl;
 
 import com.bsf.wallet.dto.request.TransferMoneyRequest;
+import com.bsf.wallet.dto.response.TransferMoneyResponse;
 import com.bsf.wallet.entity.Account;
 import com.bsf.wallet.entity.Transaction;
 import com.bsf.wallet.entity.TransactionFailLog;
@@ -28,23 +29,25 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Transactional
     @Override
-    public void transferMoney(TransferMoneyRequest transferMoneyRequest) {
+    public TransferMoneyResponse transferMoney(TransferMoneyRequest transferMoneyRequest) {
         try {
             Account crAccount = getAccount(transferMoneyRequest.crAccountId());
             Account drAccount = getAccount(transferMoneyRequest.drAccountId());
             validateBalanceEnough(drAccount, transferMoneyRequest.amount());
-            proceedTransfer(crAccount, drAccount, transferMoneyRequest);
+            return proceedTransfer(crAccount, drAccount, transferMoneyRequest);
         } catch (ServiceException e) {
             saveFailTransaction(transferMoneyRequest, "Custom error", e.getMessage());
+            throw e;
         } catch (Exception e) {
             saveFailTransaction(transferMoneyRequest, "System error", e.getMessage());
+            throw new ServiceException("Internal server error");
         }
     }
 
 
     /*Private methods*/
 
-    private void proceedTransfer(Account crAccount, Account drAccount, TransferMoneyRequest transferMoneyRequest) {
+    private TransferMoneyResponse proceedTransfer(Account crAccount, Account drAccount, TransferMoneyRequest transferMoneyRequest) {
         /*exchange balance*/
         BigDecimal oldCreditAccountBalance = crAccount.getBalance();
         BigDecimal newCreditAccountBalance = oldCreditAccountBalance.add(transferMoneyRequest.amount());
@@ -70,6 +73,8 @@ public class TransactionServiceImpl implements TransactionService {
         accountRepository.save(crAccount);
         accountRepository.save(drAccount);
         transactionRepository.save(transaction);
+
+        return new TransferMoneyResponse(transaction.getId(), transferMoneyRequest.reference());
     }
 
     private Account getAccount(long accountId) {

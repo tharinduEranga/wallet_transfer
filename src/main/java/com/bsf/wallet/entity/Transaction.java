@@ -25,13 +25,13 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "amount")
+    @Column(name = "amount", nullable = false, columnDefinition = "Decimal(10,2) default '0.00'")
     private BigDecimal amount;
 
-    @Column(name = "cr_new_balance")
+    @Column(name = "cr_new_balance", nullable = false, columnDefinition = "Decimal(10,2) default '0.00'")
     private BigDecimal crNewBalance;
 
-    @Column(name = "dr_new_balance")
+    @Column(name = "dr_new_balance", nullable = false, columnDefinition = "Decimal(10,2) default '0.00'")
     private BigDecimal drNewBalance;
 
     @Column(name = "reference")

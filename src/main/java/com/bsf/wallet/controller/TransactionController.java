@@ -1,16 +1,15 @@
 package com.bsf.wallet.controller;
 
-import com.bsf.wallet.dto.response.AccountDetail;
-import com.bsf.wallet.service.AccountService;
+import com.bsf.wallet.dto.request.TransferMoneyRequest;
+import com.bsf.wallet.dto.response.TransferMoneyResponse;
+import com.bsf.wallet.service.TransactionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 import static com.bsf.wallet.util.AppConstants.API_VERSION;
 
@@ -24,11 +23,18 @@ import static com.bsf.wallet.util.AppConstants.API_VERSION;
 @RequestMapping(value = "/" + API_VERSION + "/transaction")
 public class TransactionController {
 
-    private final AccountService accountService;
+    private final TransactionService transactionService;
 
     @PostMapping(value = "/transfer")
-    public ResponseEntity<List<AccountDetail>> transferMoney() {
-        log.info("Get account API");
-        return ResponseEntity.ok(accountService.getAccounts());
+    public ResponseEntity<TransferMoneyResponse> transferMoney(
+            @RequestBody TransferMoneyRequest transferMoneyRequest) {
+
+        log.info("Transfer money API -> request: {}", transferMoneyRequest);
+
+        TransferMoneyResponse transferMoneyResponse = transactionService
+                .transferMoney(transferMoneyRequest);
+
+        log.info("Transfer money Success -> response: {}", transferMoneyResponse);
+        return ResponseEntity.ok(transferMoneyResponse);
     }
 }

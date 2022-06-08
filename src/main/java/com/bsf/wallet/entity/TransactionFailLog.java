@@ -25,7 +25,7 @@ public class TransactionFailLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "amount")
+    @Column(name = "amount", nullable = false, columnDefinition = "Decimal(10,2) default '0.00'")
     private BigDecimal amount;
 
     @Lob

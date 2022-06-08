@@ -40,3 +40,10 @@ CREATE TABLE IF NOT EXISTS transaction_fail_log
     created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     /*No Foreign Keys have been added since this is a log table*/
 ) ENGINE = INNODB;
+
+/*data*/
+
+INSERT INTO account(name, passport_id, balance, created_at)
+VALUES ('John', '9944580', 1200, CURRENT_TIMESTAMP);
+INSERT INTO account(name, passport_id, balance, created_at)
+VALUES ('Anna', '3549580', 5000, CURRENT_TIMESTAMP);
