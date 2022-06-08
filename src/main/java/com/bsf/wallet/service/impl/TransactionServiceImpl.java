@@ -33,6 +33,7 @@ public class TransactionServiceImpl implements TransactionService {
         try {
             Account crAccount = getAccount(transferMoneyRequest.crAccountId());
             Account drAccount = getAccount(transferMoneyRequest.drAccountId());
+            commonValidation(transferMoneyRequest, crAccount, drAccount);
             validateBalanceEnough(drAccount, transferMoneyRequest.amount());
             return proceedTransfer(crAccount, drAccount, transferMoneyRequest);
         } catch (ServiceException e) {
@@ -80,6 +81,15 @@ public class TransactionServiceImpl implements TransactionService {
     private Account getAccount(long accountId) {
         return accountRepository.findById(accountId)
                 .orElseThrow(() -> new ServiceException("No account found for id: " + accountId));
+    }
+
+    private void commonValidation(TransferMoneyRequest transferMoneyRequest, Account crAccount, Account drAccount) {
+        if (transactionRepository.existsByReference(transferMoneyRequest.reference())) {
+            throw new ServiceException("Reference already exists, please change and try again");
+        }
+        if (crAccount.getId().equals(drAccount.getId())) {
+            throw new ServiceException("Cannot transfer for the same account");
+        }
     }
 
     private void validateBalanceEnough(Account drAccount, BigDecimal amount) {
