@@ -73,7 +73,7 @@ class TransactionServiceImplTest {
                 crAccount.getId(),
                 drAccount.getId(),
                 amount,
-                REFERENCE,
+                "8d449f69d429d2562e55faf816253ae5", //unique to this test to avoid conflicts in next tests
                 DESCRIPTION
         );
         TransferMoneyResponse transferMoneyResponse = transactionService.transferMoney(transferMoneyRequest);
