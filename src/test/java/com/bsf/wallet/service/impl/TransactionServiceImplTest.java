@@ -68,15 +68,25 @@ class TransactionServiceImplTest {
 
     @Test
     void successfulTransaction() {
+        //new data unique to this test to avoid conflicts in next tests
+        Account crAccount = new Account(null, "TestUser1", "898955",
+                BigDecimal.valueOf(2500.00), LocalDateTime.now(), 1L);
+        Account drAccount = new Account(null, "TestUser2", "663325",
+                BigDecimal.valueOf(4500.00), LocalDateTime.now(), 1L);
+        crAccount = accountRepository.save(crAccount);
+        drAccount = accountRepository.save(drAccount);
+        String reference = "8d449f69d429d2562e55faf816253ae5";
         BigDecimal amount = BigDecimal.valueOf(50.00);
+
         TransferMoneyRequest transferMoneyRequest = new TransferMoneyRequest(
                 crAccount.getId(),
                 drAccount.getId(),
                 amount,
-                "8d449f69d429d2562e55faf816253ae5", //unique to this test to avoid conflicts in next tests
+                reference ,
                 DESCRIPTION
         );
         TransferMoneyResponse transferMoneyResponse = transactionService.transferMoney(transferMoneyRequest);
+
         Optional<Account> crAccountAfterTransfer = accountRepository.findById(crAccount.getId());
         Optional<Account> drAccountAfterTransfer = accountRepository.findById(drAccount.getId());
         boolean transactionExists = transactionRepository.existsByReference(transferMoneyRequest.reference());
