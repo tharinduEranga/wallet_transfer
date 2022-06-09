@@ -41,6 +41,9 @@ CREATE TABLE IF NOT EXISTS transaction_fail_log
     /*No Foreign Keys have been added since this is a log table*/
 ) ENGINE = INNODB;
 
+/*version column*/
+ALTER TABLE account ADD COLUMN version INT DEFAULT 1;
+
 /*data*/
 
 INSERT INTO account(name, passport_id, balance, created_at)
