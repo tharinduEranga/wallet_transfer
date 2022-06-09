@@ -3,12 +3,12 @@ package com.bsf.wallet.service.impl;
 import com.bsf.wallet.dto.response.AccountDetail;
 import com.bsf.wallet.entity.Account;
 import com.bsf.wallet.repository.AccountRepository;
-import com.bsf.wallet.service.AccountService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class AccountServiceImplTest {
 
     @Autowired
-    private AccountService accountService;
+    private AccountServiceImpl accountService;
 
     @Autowired
     private AccountRepository accountRepository;
