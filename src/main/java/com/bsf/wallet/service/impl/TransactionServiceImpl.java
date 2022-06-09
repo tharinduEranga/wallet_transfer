@@ -84,7 +84,6 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     private void commonValidation(TransferMoneyRequest transferMoneyRequest, Account crAccount, Account drAccount) {
-        //TODO: check the input field validations as well
         if (transactionRepository.existsByReference(transferMoneyRequest.reference())) {
             throw new ServiceException("Reference already exists, please change and try again");
         }

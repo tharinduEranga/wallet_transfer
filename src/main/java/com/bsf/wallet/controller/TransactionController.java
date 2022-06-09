@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import javax.validation.Valid;
 
 import static com.bsf.wallet.util.AppConstants.API_VERSION;
 
@@ -27,7 +28,7 @@ public class TransactionController {
 
     @PostMapping(value = "/transfer")
     public ResponseEntity<TransferMoneyResponse> transferMoney(
-            @RequestBody TransferMoneyRequest transferMoneyRequest) {
+            @Valid @RequestBody TransferMoneyRequest transferMoneyRequest) {
 
         log.info("Transfer money API -> request: {}", transferMoneyRequest);
 
