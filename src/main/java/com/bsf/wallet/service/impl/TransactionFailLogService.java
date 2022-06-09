@@ -20,6 +20,6 @@ public class TransactionFailLogService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void saveFailTransaction(TransactionFailLog transactionFailLog) {
-
+        transactionFailLogRepository.save(transactionFailLog);
     }
 }
