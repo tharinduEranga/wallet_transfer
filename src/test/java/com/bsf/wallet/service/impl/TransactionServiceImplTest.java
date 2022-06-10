@@ -49,9 +49,9 @@ class TransactionServiceImplTest {
     @BeforeAll
     void setUp() {
         crAccount = new Account(1L, "John", "323232",
-                BigDecimal.valueOf(100.00), LocalDateTime.now(), 1L);
+                BigDecimal.valueOf(100.00), LocalDateTime.now());
         drAccount = new Account(2L, "Anna", "898787",
-                BigDecimal.valueOf(1200.00), LocalDateTime.now(), 1L);
+                BigDecimal.valueOf(1200.00), LocalDateTime.now());
         accountRepository.saveAll(asList(crAccount, drAccount));
 
         Transaction transaction = Transaction.builder()
@@ -70,9 +70,9 @@ class TransactionServiceImplTest {
     void successfulTransaction() {
         //new data unique to this test to avoid conflicts in next tests
         Account crAccount = new Account(null, "TestUser1", "898955",
-                BigDecimal.valueOf(2500.00), LocalDateTime.now(), 1L);
+                BigDecimal.valueOf(2500.00), LocalDateTime.now());
         Account drAccount = new Account(null, "TestUser2", "663325",
-                BigDecimal.valueOf(4500.00), LocalDateTime.now(), 1L);
+                BigDecimal.valueOf(4500.00), LocalDateTime.now());
         crAccount = accountRepository.save(crAccount);
         drAccount = accountRepository.save(drAccount);
         String reference = "8d449f69d429d2562e55faf816253ae5";

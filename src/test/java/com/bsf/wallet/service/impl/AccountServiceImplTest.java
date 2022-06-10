@@ -37,8 +37,8 @@ class AccountServiceImplTest {
     @Test
     void getAccounts() {
         List<Account> accountsSaved = Arrays.asList(
-                new Account(1L, "John", "323232", BigDecimal.TEN, LocalDateTime.now(), 1L),
-                new Account(2L, "Anna", "898787", BigDecimal.TEN, LocalDateTime.now(), 1L)
+                new Account(1L, "John", "323232", BigDecimal.TEN, LocalDateTime.now()),
+                new Account(2L, "Anna", "898787", BigDecimal.TEN, LocalDateTime.now())
         );
         accountRepository.saveAll(accountsSaved);
         List<AccountDetail> fetchedAccounts = accountService.getAccounts();

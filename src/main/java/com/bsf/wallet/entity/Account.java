@@ -37,10 +37,6 @@ public class Account {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    /*used to optimistic locking. no business requirement*/
-    @Version
-    private Long version;
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
