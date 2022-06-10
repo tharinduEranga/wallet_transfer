@@ -21,7 +21,7 @@ public class RestResponseEntityExceptionHandler
     @ExceptionHandler(value = {ServiceException.class})
     protected ResponseEntity<Object> handleCustom(ServiceException ex, WebRequest request) {
         return handleExceptionInternal(ex,
-                new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage()),
+                new ErrorResponse(ex.getCode(), ex.getMessage()),
                 new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
@@ -35,7 +35,8 @@ public class RestResponseEntityExceptionHandler
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
-                                                                  HttpHeaders headers, HttpStatus status, WebRequest request) {
+                                                                  HttpHeaders headers, HttpStatus status,
+                                                                  WebRequest request) {
         String errorMessage = ex.getBindingResult().getFieldErrors().get(0).getDefaultMessage();
         String field = ex.getBindingResult().getFieldErrors().get(0).getField();
         String message = "'" + field + "' " + errorMessage;

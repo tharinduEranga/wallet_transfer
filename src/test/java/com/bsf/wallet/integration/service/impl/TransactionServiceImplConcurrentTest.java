@@ -74,7 +74,8 @@ public class TransactionServiceImplConcurrentTest {
                             DESCRIPTION
                     );
                     executeTransaction(transferMoneyRequest);
-                    boolean transactionExists = transactionRepository.existsByReference(transferMoneyRequest.reference());
+                    boolean transactionExists = transactionRepository
+                            .existsByReference(transferMoneyRequest.reference());
                     assertTrue(transactionExists);
                 } catch (Exception e) {
                     e.printStackTrace();
