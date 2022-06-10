@@ -4,8 +4,10 @@ import com.bsf.wallet.dto.request.TransferMoneyRequest;
 import com.bsf.wallet.dto.response.TransferMoneyResponse;
 import com.bsf.wallet.entity.Account;
 import com.bsf.wallet.entity.Transaction;
+import com.bsf.wallet.entity.TransactionFailLog;
 import com.bsf.wallet.exception.ServiceException;
 import com.bsf.wallet.repository.AccountRepository;
+import com.bsf.wallet.repository.TransactionFailLogRepository;
 import com.bsf.wallet.repository.TransactionRepository;
 import com.bsf.wallet.service.impl.TransactionServiceImpl;
 import org.hamcrest.Matchers;
@@ -18,6 +20,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.Optional;
 
 import static java.util.Arrays.asList;
@@ -42,6 +45,8 @@ class TransactionServiceImplTest {
     private AccountRepository accountRepository;
     @Autowired
     private TransactionRepository transactionRepository;
+    @Autowired
+    private TransactionFailLogRepository transactionFailLogRepository;
 
     private Account crAccount;
     private Account drAccount;
@@ -117,6 +122,7 @@ class TransactionServiceImplTest {
                 () -> transactionService.transferMoney(transferMoneyRequest)
         );
         assertEquals("No account found for id: %d".formatted(invalidAccountId), exception.getMessage());
+        assertFalse(getTransactionFailLogs(transferMoneyRequest.reference()).isEmpty());
     }
 
     @Test
@@ -132,6 +138,7 @@ class TransactionServiceImplTest {
                 () -> transactionService.transferMoney(transferMoneyRequest)
         );
         assertEquals("No account found for id: %d".formatted(invalidAccountId), exception.getMessage());
+        assertFalse(getTransactionFailLogs(transferMoneyRequest.reference()).isEmpty());
     }
 
     @Test
@@ -147,6 +154,7 @@ class TransactionServiceImplTest {
                 () -> transactionService.transferMoney(transferMoneyRequest)
         );
         assertEquals("Reference already exists, please change and try again", exception.getMessage());
+        assertFalse(getTransactionFailLogs(transferMoneyRequest.reference()).isEmpty());
     }
 
     @Test
@@ -162,6 +170,7 @@ class TransactionServiceImplTest {
                 () -> transactionService.transferMoney(transferMoneyRequest)
         );
         assertEquals("Cannot transfer for the same account", exception.getMessage());
+        assertFalse(getTransactionFailLogs(transferMoneyRequest.reference()).isEmpty());
     }
 
     @Test
@@ -177,5 +186,11 @@ class TransactionServiceImplTest {
                 () -> transactionService.transferMoney(transferMoneyRequest)
         );
         assertEquals("Not enough balance available for the transaction", exception.getMessage());
+        assertFalse(getTransactionFailLogs(transferMoneyRequest.reference()).isEmpty());
+    }
+
+
+    private Collection<TransactionFailLog> getTransactionFailLogs(String reference) {
+        return transactionFailLogRepository.findByReference(reference);
     }
 }

@@ -104,6 +104,7 @@ public class TransactionServiceImpl implements TransactionService {
                 .drAccountId(transferMoneyRequest.drAccountId())
                 .amount(transferMoneyRequest.amount())
                 .description(info)
+                .reference(transferMoneyRequest.reference())
                 .error(errorMessage)
                 .build();
         transactionFailLogService.saveFailTransaction(transactionFailLog);

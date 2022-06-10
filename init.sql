@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS transaction_fail_log
     cr_account_id INT,
     dr_account_id INT,
     amount        DECIMAL(10, 2),
+    reference     VARCHAR(256),
     description   LONGTEXT,
     error         LONGTEXT,
     created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP

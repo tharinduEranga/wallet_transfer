@@ -36,6 +36,9 @@ public class TransactionFailLog {
     @Column(name = "error")
     private String error;
 
+    @Column(name = "reference")
+    private String reference;
+
     @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;
