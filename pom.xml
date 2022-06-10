@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.bsf.wallet</groupId>
 	<artifactId>wallet_transfer</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.1-RELEASE</version>
 	<name>wallet_transfer</name>
 	<description>Wallet balance transfer microservice</description>
 	<properties>
