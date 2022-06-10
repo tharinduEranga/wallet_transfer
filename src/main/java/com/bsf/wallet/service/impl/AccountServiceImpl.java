@@ -4,9 +4,10 @@ import com.bsf.wallet.dto.response.AccountDetail;
 import com.bsf.wallet.entity.Account;
 import com.bsf.wallet.repository.AccountRepository;
 import com.bsf.wallet.service.AccountService;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 /**
@@ -20,16 +21,13 @@ public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
 
     @Override
-    public List<AccountDetail> getAccounts() {
-        return getAccountDetails(accountRepository.findAll());
+    public Page<AccountDetail> getAccounts(Pageable pageable) {
+        return getAccountDetails(accountRepository.findAll(pageable));
     }
 
     /*private methods*/
-    private List<AccountDetail> getAccountDetails(List<Account> accounts) {
-        return accounts
-                .stream()
-                .map(this::mapAccountDetail)
-                .toList();
+    private Page<AccountDetail> getAccountDetails(Page<Account> accounts) {
+        return accounts.map(this::mapAccountDetail);
     }
 
     private AccountDetail mapAccountDetail(Account account) {

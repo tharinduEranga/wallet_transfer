@@ -9,6 +9,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -42,10 +45,12 @@ class AccountServiceImplTest {
                 new Account(1L, "John", "323232", BigDecimal.TEN, LocalDateTime.now()),
                 new Account(2L, "Anna", "898787", BigDecimal.TEN, LocalDateTime.now())
         );
-        when(accountRepository.findAll()).thenReturn(accounts);
-        List<AccountDetail> fetchedAccounts = accountService.getAccounts();
+        PageRequest pageRequest = PageRequest.of(0, accounts.size());
+        Page<Account> accountPage = new PageImpl<>(accounts);
+        when(accountRepository.findAll(pageRequest)).thenReturn(accountPage);
+        Page<AccountDetail> fetchedAccounts = accountService.getAccounts(pageRequest);
 
-        assertEquals(accounts.size(), fetchedAccounts.size());
+        assertEquals(accounts.size(), fetchedAccounts.getSize());
         boolean contains = true;
         for (Account account : accounts) {
             contains = fetchedAccounts.stream()

@@ -9,6 +9,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
@@ -48,7 +50,7 @@ class AccountServiceImplTest {
                 new Account(2L, "Anna", "898787", BigDecimal.TEN, LocalDateTime.now())
         );
         accountRepository.saveAll(accountsSaved);
-        List<AccountDetail> fetchedAccounts = accountService.getAccounts();
-        assertEquals(accountsSaved.size(), fetchedAccounts.size());
+        Page<AccountDetail> fetchedAccounts = accountService.getAccounts(PageRequest.of(0, accountsSaved.size()));
+        assertEquals(accountsSaved.size(), fetchedAccounts.getSize());
     }
 }

@@ -1,10 +1,11 @@
 package com.bsf.wallet.controller;
 
-import java.util.List;
 import com.bsf.wallet.dto.response.AccountDetail;
 import com.bsf.wallet.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,8 +26,8 @@ public class AccountController {
     private final AccountService accountService;
 
     @GetMapping(value = "")
-    public ResponseEntity<List<AccountDetail>> getAccounts() {
+    public ResponseEntity<Page<AccountDetail>> getAccounts(Pageable pageable) {
         log.info("Get account API");
-        return ResponseEntity.ok(accountService.getAccounts());
+        return ResponseEntity.ok(accountService.getAccounts(pageable));
     }
 }

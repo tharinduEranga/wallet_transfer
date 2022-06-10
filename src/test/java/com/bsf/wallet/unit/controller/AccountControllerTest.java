@@ -11,6 +11,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -58,12 +60,13 @@ class AccountControllerTest {
                 new AccountDetail(new Random().nextLong(), "Anna",
                         "898787", BigDecimal.TEN, LocalDateTime.now())
         );
-        when(accountService.getAccounts()).thenReturn(accounts);
+        PageImpl<AccountDetail> accountsPage = new PageImpl<>(accounts);
+        when(accountService.getAccounts(PageRequest.of(0, accounts.size()))).thenReturn(accountsPage);
 
-        mockMvc.perform(get("/v1/account"))
+        mockMvc.perform(get("/v1/account?size=2&page=0"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", Matchers.hasSize(accounts.size())))
-                .andExpect(jsonPath("$[0].id", Matchers.equalTo(accounts.get(0).id())))
-                .andExpect(jsonPath("$[1].id", Matchers.equalTo(accounts.get(1).id())));
+                .andExpect(jsonPath("$.content", Matchers.hasSize(accountsPage.getSize())))
+                .andExpect(jsonPath("$.content[0].id", Matchers.equalTo(accounts.get(0).id())))
+                .andExpect(jsonPath("$.content[1].id", Matchers.equalTo(accounts.get(1).id())));
     }
 }

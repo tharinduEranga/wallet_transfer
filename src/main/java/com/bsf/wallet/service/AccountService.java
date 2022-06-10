@@ -1,13 +1,13 @@
 package com.bsf.wallet.service;
 
 import com.bsf.wallet.dto.response.AccountDetail;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * Created by: Tharindu Eranga
  * Date: 07 Jun 2022
  **/
 public interface AccountService {
-    List<AccountDetail> getAccounts();
+    Page<AccountDetail> getAccounts(Pageable pageable);
 }
