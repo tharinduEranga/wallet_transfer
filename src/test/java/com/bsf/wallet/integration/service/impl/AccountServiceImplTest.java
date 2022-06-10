@@ -1,8 +1,9 @@
-package com.bsf.wallet.service.impl;
+package com.bsf.wallet.integration.service.impl;
 
 import com.bsf.wallet.dto.response.AccountDetail;
 import com.bsf.wallet.entity.Account;
 import com.bsf.wallet.repository.AccountRepository;
+import com.bsf.wallet.service.impl.AccountServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

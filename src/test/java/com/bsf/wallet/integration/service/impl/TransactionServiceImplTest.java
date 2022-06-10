@@ -1,4 +1,4 @@
-package com.bsf.wallet.service.impl;
+package com.bsf.wallet.integration.service.impl;
 
 import com.bsf.wallet.dto.request.TransferMoneyRequest;
 import com.bsf.wallet.dto.response.TransferMoneyResponse;
@@ -7,6 +7,7 @@ import com.bsf.wallet.entity.Transaction;
 import com.bsf.wallet.exception.ServiceException;
 import com.bsf.wallet.repository.AccountRepository;
 import com.bsf.wallet.repository.TransactionRepository;
+import com.bsf.wallet.service.impl.TransactionServiceImpl;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
