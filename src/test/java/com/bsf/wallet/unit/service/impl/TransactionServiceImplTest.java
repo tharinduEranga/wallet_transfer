@@ -4,14 +4,14 @@ import com.bsf.wallet.dto.request.TransferMoneyRequest;
 import com.bsf.wallet.dto.response.TransferMoneyResponse;
 import com.bsf.wallet.entity.Account;
 import com.bsf.wallet.entity.Transaction;
+import com.bsf.wallet.entity.TransactionFailLog;
+import com.bsf.wallet.exception.ServiceException;
 import com.bsf.wallet.repository.AccountRepository;
 import com.bsf.wallet.repository.TransactionRepository;
 import com.bsf.wallet.service.impl.TransactionFailLogService;
 import com.bsf.wallet.service.impl.TransactionServiceImpl;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,6 +22,7 @@ import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -31,7 +32,6 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
  * Created by: Tharindu Eranga
  * Date: 10 Jun 2022
  **/
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest
 class TransactionServiceImplTest {
 
@@ -47,10 +47,6 @@ class TransactionServiceImplTest {
     @Mock
     private TransactionFailLogService transactionFailLogService;
 
-    @BeforeAll
-    void setUp() {
-
-    }
 
     @Test
     void successfulTransaction() {
@@ -85,6 +81,129 @@ class TransactionServiceImplTest {
         assertThat(crAccount.getBalance(), Matchers.comparesEqualTo(crBalanceBefore.add(amount)));
         assertThat(drAccount.getBalance(), Matchers.comparesEqualTo(drBalanceBefore.subtract(amount)));
         verify(transactionRepository, times(1)).save(any(Transaction.class));
+    }
+
+    @Test
+    void transferMoneyInvalidCrAccount() {
+        Long validAccountId = 1L;
+        Long invalidAccountId = 2L;
+        Optional<Account> crAccountOptional = Optional.of(new Account(1L, "TestUser1", "898955",
+                BigDecimal.TEN, LocalDateTime.now()));
+        TransferMoneyRequest transferMoneyRequest = new TransferMoneyRequest(
+                validAccountId,
+                invalidAccountId,
+                BigDecimal.valueOf(50.00),
+                REFERENCE,
+                DESCRIPTION
+        );
+
+        when(accountRepository.findById(validAccountId)).thenReturn(crAccountOptional);
+        when(accountRepository.findById(invalidAccountId)).thenReturn(Optional.empty());
+
+        ServiceException exception = assertThrows(ServiceException.class,
+                () -> transactionService.transferMoney(transferMoneyRequest)
+        );
+        assertEquals("No account found for id: %d".formatted(invalidAccountId), exception.getMessage());
+        verify(transactionFailLogService, times(1))
+                .saveFailTransaction(any(TransactionFailLog.class));
+    }
+
+    @Test
+    void transferMoneyInvalidDrAccount() {
+        Long validAccountId = 1L;
+        Long invalidAccountId = 2L;
+        Optional<Account> drAccountOptional = Optional.of(new Account(1L, "TestUser1", "898955",
+                BigDecimal.TEN, LocalDateTime.now()));
+        TransferMoneyRequest transferMoneyRequest = new TransferMoneyRequest(
+                invalidAccountId,
+                validAccountId,
+                BigDecimal.valueOf(50.00),
+                REFERENCE,
+                DESCRIPTION
+        );
+
+        when(accountRepository.findById(invalidAccountId)).thenReturn(Optional.empty());
+        when(accountRepository.findById(validAccountId)).thenReturn(drAccountOptional);
+
+        ServiceException exception = assertThrows(ServiceException.class,
+                () -> transactionService.transferMoney(transferMoneyRequest)
+        );
+        assertEquals("No account found for id: %d".formatted(invalidAccountId), exception.getMessage());
+        verify(transactionFailLogService, times(1))
+                .saveFailTransaction(any(TransactionFailLog.class));
+    }
+
+    @Test
+    void transferMoneyDuplicateReference() {
+        Optional<Account> crAccountOptional = Optional.of(new Account(1L, "TestUser1", "898955",
+                BigDecimal.valueOf(500.00), LocalDateTime.now()));
+        Optional<Account> drAccountOptional = Optional.of(new Account(2L, "TestUser2", "755955",
+                BigDecimal.valueOf(500.00), LocalDateTime.now()));
+        TransferMoneyRequest transferMoneyRequest = new TransferMoneyRequest(
+                crAccountOptional.get().getId(),
+                drAccountOptional.get().getId(),
+                BigDecimal.valueOf(50.00),
+                REFERENCE,
+                DESCRIPTION
+        );
+
+        when(accountRepository.findById(crAccountOptional.get().getId())).thenReturn(crAccountOptional);
+        when(accountRepository.findById(drAccountOptional.get().getId())).thenReturn(drAccountOptional);
+        when(transactionRepository.existsByReference(REFERENCE)).thenReturn(Boolean.TRUE);
+
+        ServiceException exception = assertThrows(ServiceException.class,
+                () -> transactionService.transferMoney(transferMoneyRequest)
+        );
+        assertEquals("Reference already exists, please change and try again", exception.getMessage());
+        verify(transactionFailLogService, times(1))
+                .saveFailTransaction(any(TransactionFailLog.class));
+    }
+
+    @Test
+    void transferMoneyToSameAccount() {
+        Optional<Account> drAccountOptional = Optional.of(new Account(2L, "TestUser2", "755955",
+                BigDecimal.valueOf(500.00), LocalDateTime.now()));
+        TransferMoneyRequest transferMoneyRequest = new TransferMoneyRequest(
+                drAccountOptional.get().getId(),
+                drAccountOptional.get().getId(),
+                BigDecimal.valueOf(50.00),
+                REFERENCE,
+                DESCRIPTION
+        );
+
+        when(accountRepository.findById(drAccountOptional.get().getId())).thenReturn(drAccountOptional);
+
+        ServiceException exception = assertThrows(ServiceException.class,
+                () -> transactionService.transferMoney(transferMoneyRequest)
+        );
+        assertEquals("Cannot transfer for the same account", exception.getMessage());
+        verify(transactionFailLogService, times(1))
+                .saveFailTransaction(any(TransactionFailLog.class));
+    }
+
+    @Test
+    void transferMoneyWhenDrBalanceIsNotEnough() {
+        Optional<Account> crAccountOptional = Optional.of(new Account(1L, "TestUser1", "898955",
+                BigDecimal.valueOf(500.00), LocalDateTime.now()));
+        Optional<Account> drAccountOptional = Optional.of(new Account(2L, "TestUser2", "755955",
+                BigDecimal.valueOf(400.00), LocalDateTime.now()));
+        TransferMoneyRequest transferMoneyRequest = new TransferMoneyRequest(
+                crAccountOptional.get().getId(),
+                drAccountOptional.get().getId(),
+                BigDecimal.valueOf(500.00),
+                REFERENCE,
+                DESCRIPTION
+        );
+
+        when(accountRepository.findById(crAccountOptional.get().getId())).thenReturn(crAccountOptional);
+        when(accountRepository.findById(drAccountOptional.get().getId())).thenReturn(drAccountOptional);
+
+        ServiceException exception = assertThrows(ServiceException.class,
+                () -> transactionService.transferMoney(transferMoneyRequest)
+        );
+        assertEquals("Not enough balance available for the transaction", exception.getMessage());
+        verify(transactionFailLogService, times(1))
+                .saveFailTransaction(any(TransactionFailLog.class));
     }
 
 }
