@@ -2,7 +2,7 @@ version: "3.8"
 services:
   mysqldb:
     image: mysql:5.7
-    restart: always
+    restart: unless-stopped
     environment:
       MYSQL_DATABASE: wallet_transfer_db
       MYSQL_ROOT_PASSWORD: 1234
